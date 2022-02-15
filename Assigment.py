@@ -1,5 +1,4 @@
 import json
-
 import openpyxl
 import requests
 from BaseClass import test_Base
@@ -52,12 +51,36 @@ class Test_API_User:
             statuscode = response.status_code
             data = response.json()
             bearer_token = data['token']
-            print(statuscode)
             print(bearer_token)
             log.info(statuscode)
             assert statuscode == 200
             log.info("Successfully Logged in")
             return bearer_token
+        except Exception as e:
+            print("Exception occured", e)
+
+    def test_LoginuserNegative(self):
+        try:
+            log = test_Base.getLogger()
+            url = baseUrl + '/user/login'
+            headers = {'content-type': 'application/json'}
+            dataObj = Test_Data()
+            dictionaryData = dataObj.getTestData("loginusernegative")
+            email = str(dictionaryData['email'])
+            password = str(dictionaryData['password'])
+            payload = {
+                "email": "" + email + "",
+                "password": "" + password + ""
+            }
+            response = requests.post(url, data=json.dumps(payload), headers=headers)
+            statuscode = response.status_code
+            data = response.json()
+            print(data)
+            print(statuscode)
+            log.info(statuscode)
+            assert statuscode == 400
+            log.info("Negative scenario working properly!!")
+
         except Exception as e:
             print("Exception occured", e)
 
@@ -75,6 +98,7 @@ class Test_API_User:
             response = requests.post(url, data=payload, headers=headers)
             statuscode = response.status_code
             data = response.json()
+            print(data)
             print(statuscode)
             log.info(statuscode)
             assert statuscode == 200
@@ -96,6 +120,7 @@ class Test_API_User:
             response = requests.get(url, data=payload, headers=headers)
             statuscode = response.status_code
             data = response.json()
+            print(data)
             print(statuscode)
             log.info(statuscode)
             assert statuscode == 200
@@ -237,11 +262,16 @@ class Test_API_User:
             headers = {'content-type': 'application/json',
                        'Authorization': 'Bearer ' + bearertoken
                        }
-
             payload = {}
             response = requests.get(url, data=payload, headers=headers)
             statuscode = response.status_code
             data = response.json()
+            alldata = data['data']
+            alldata = str(alldata)
+            wb = openpyxl.load_workbook('Book2.xlsx')
+            sheet = wb.active
+            sheet['A1'] = alldata
+            wb.save('Book2.xlsx')
             print(data)
             print(statuscode)
             log.info(statuscode)
@@ -333,17 +363,18 @@ class Test_API_User:
             payload = {}
             response = requests.get(url, data=payload, headers=headers, params=param)
             statuscode = response.status_code
+            print(statuscode)
+            log.info(statuscode)
             data = response.json()
             print(data)
-            descriptions = data['data']
-            print(statuscode)
-            print(descriptions)
-            log.info(statuscode)
+            count= data['count']
+            count=int(count)
+            print(count)
+            limit=int(limit)
+            print(limit)
+            assert count == limit
+            log.info("Number of count is same as of limit provided")
             assert statuscode == 200
             log.info("Successfull!!")
         except Exception as e:
             print("Exception occured!!", e)
-
-
-
-
