@@ -377,4 +377,4 @@ class Test_API_User:
             assert statuscode == 200
             log.info("Successfull!!")
         except Exception as e:
-            print("Exception occured!!", e)
+            print("Exception occurred!!", e)
